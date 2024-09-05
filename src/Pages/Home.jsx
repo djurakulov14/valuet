@@ -1,5 +1,6 @@
 import { Button } from '@mui/material';
 import React from 'react'
+import Balance from '../Components/Balance';
 
 const Home = () => {
 
@@ -29,6 +30,7 @@ const Home = () => {
             </div>
             <Button variant='cantained' sx={{backgroundColor: "#3BA0FF", fontWeight: "550" ,borderRadius: '1000px'}}>Add Widget</Button>
         </div>
+        <Balance/>
     </div>
   )
 }

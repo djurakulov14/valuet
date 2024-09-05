@@ -1,21 +1,51 @@
 import { Button } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaRegUserCircle } from "react-icons/fa";
 import { IoIosLock } from "react-icons/io";
 import { IoEyeOff } from "react-icons/io5";
 import { IoEye } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
+import { useHttp } from '../Hooks/http.hook';
+import toast, { Toaster } from 'react-hot-toast';
 
-function LoginForm() {
+function LoginForm({sign, setSign}) {
 	const [show, setShow] = useState(false)
     const {register, formState: {erros}, handleSubmit, watch} = useForm()
 	const navigate = useNavigate()
+	const [users, setUsers] = useState([])
+	const {request} = useHttp()
+	const nameRegex = /^[А-Яа-яA-Za-z\s-]+$/; // Имя, Фамилия, Отчество: только буквы и пробелы
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Email: базовая проверка
+	const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+
+	useEffect(() => {
+        request(
+			"http://localhost:7777/users",
+			"GET",
+		).then((res) => {
+			setUsers(res);
+		});
+    }, [])
+
+	const notify = (msg) => toast(msg);
 
 
     const submit = (data) => {
-		localStorage.setItem("user", JSON.stringify(data))
-		navigate('/')
+
+		let user = users.filter(item => item.login === data.login && item.password === data.password)
+		if(user.length != 0) {
+			notify("succes")
+			localStorage.setItem("user", JSON.stringify(user[0]))
+			navigate('/')
+			console.log("sd");
+			
+		} else {
+			notify("incorrect details")
+			console.log("sd");
+s
+			
+		}
 	}
 
 	const handleShow = () => {
@@ -31,24 +61,29 @@ function LoginForm() {
 					<input {
 						...register("login", {required: true})
 					} 
-					className=' w-full bg-transparent outline-0 text-[#616A8B]' placeholder='E-mail or login' type="text" />
+					required
+					error={ erros?.login ? "Fill the input correctly" : ''}
+					className=' w-full bg-transparent outline-0' placeholder='E-mail' type="text" />
 				</div>
 				<div className=" w-full py-[11px] px-[16px] flex gap-[10px] items-center bg-[#2E3558] rounded-lg" >
 					<IoIosLock size={30}/>
 					<input {
 						...register("password", {required: true})
 					} 
-					className=' w-full bg-transparent outline-0 text-[#616A8B]' placeholder='Password' type={show ? "text" : "password"} />
+					required
+					error={ erros?.password ? "Fill the input correctly" : ''}
+					className=' w-full bg-transparent outline-0' placeholder='Password' type={show ? "text" : "password"} />
 					{
 						show ? <IoEyeOff className=' cursor-pointer' size={30} onClick={handleShow}/> : <IoEye className=' cursor-pointer' size={30} onClick={handleShow}/>
 					}
 				</div>
 			</div>
 			<div className="btns flex gap-[32px]">
-				<Button variant="contained" sx={{backgroundColor: 'gray'}} >Sing Up</Button>
+				<Button onClick={() => setSign(!sign)} variant="contained" sx={{backgroundColor: 'gray'}} >Sing Up</Button>
 				<Button type='submit' variant="contained">Sing In</Button>
 			</div>
 			<span className='text-[#5FB2FF] underline decoration-solid'>Forgot your password?</span>
+			<Toaster/>
 		</form>
 	);
 }

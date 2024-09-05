@@ -70,7 +70,7 @@ const Aside = () => {
         <div className="bot flex flex-col gap-[20px] border-t-2 border-[#1288E8] pt-[20px] px-[20px]">
             <div className="flex items-center gap-[20px] text-lg text-[#616A8B] cursor-pointer">
                 <FaRegUserCircle size={35}/>
-                <span>{user?.login}</span>
+                <span>{user?.fullName}</span>
             </div>
             <div className="flex items-center gap-[20px] text-lg text-[#616A8B] cursor-pointer" onClick={logOut}>
                 <CiLogout size={35}/>
